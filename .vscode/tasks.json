@@ -15,9 +15,9 @@
         "focus": false,
         "panel": "dedicated"
       },
-      "args": ["--force", "--sketch=${workspaceRoot}/cells", "--output=${workspaceRoot}/cells/out", "--run"],
+      "args": ["--force", "--sketch=${workspaceRoot}/triangles", "--output=${workspaceRoot}/triangles/out", "--run"],
       "windows": {
-        "args": ["--force", "--sketch=${workspaceRoot}/cells", "--output=${workspaceRoot}/cells\\out", "--run"]
+        "args": ["--force", "--sketch=${workspaceRoot}/triangles", "--output=${workspaceRoot}/triangles\\out", "--run"]
       }
     }
   ]

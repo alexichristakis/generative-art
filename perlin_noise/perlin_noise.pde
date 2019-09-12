@@ -1,5 +1,3 @@
-
-
 int NUM_COLORS = 3;
 int NUM_PARTICLES = 800;
 int NOISE_SCALE = 800;
