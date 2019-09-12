@@ -16,9 +16,24 @@ public class zero_one extends PApplet {
 
 int frame;
 int NOISE_SCALE = 800;
+int RESOLUTION = 50;
 int[] colors = { color(69,33,124), color(7,153,242), color(255) };
 ArrayList<Row> rows = new ArrayList<Row>();
 
+class Point {
+    float x, y, z;
+    Point(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    Point(float x, float y) {
+        this.x = x;
+        this.y = y;
+        this.z = 0;
+    }
+}
 
 class Row {
     Box[] boxes;
@@ -36,7 +51,9 @@ class Row {
     }
 
     public void draw() {
-        top -= 60 / (frame + 10);
+        stroke(255);
+
+        top -= max(60 / (frame + 10), 0.8f);
         for (int i = 0; i < boxes.length; i++) {
             boxes[i].draw(top);
         }
@@ -47,13 +64,12 @@ class Row {
 class Box {
     int col;
     float speed, index, size, progress, offset;
-    ArrayList<Particle> particles = new ArrayList<Particle>();
 
     Box(int index, float size) {
         this.size = size;
         this.index = index;
         this.speed = random(0.01f, 0.2f);
-        this.offset = random(1, 50);
+        this.offset = random(1, 3 * size / 4);
         this.progress = 0;
         this.col = colors[(int) random(0, 2)];
     }
@@ -68,68 +84,23 @@ class Box {
         fill(255);
         rect(index * size, top + offsetProgress, size, size - fillProgress);
 
-        strokeWeight(4);
-        fill(0);
+        // strokeWeight(2);
+        // fill(0);
 
-        float cx = index * size + size / 2;
-        float cy = top + offsetProgress + size / 2;
+        // float cx = index * size + size / 2;
+        // float cy = top + offsetProgress + size / 2;
 
-        float x2 = map(cos(progress), -1, 1, cx - size / 2, cx + size / 2);
-        float y2 = map(sin(progress), -1, 1, cy - size / 2, cy + size / 2);
+        // float x2 = map(cos(progress), -1, 1, cx - size / 2, cx + size / 2);
+        // float y2 = map(sin(progress), -1, 1, cy - size / 2, cy + size / 2);
         // circle(cx, cy, offsetProgress - size);
-        line(cx, cy, x2, y2);
+        // line(cx, cy, x2, y2);
 
-        for (Particle particle : particles) {
-            particle.move();
-            particle.draw(random(1, 4), (int) random(0, 250));
-        }
-        
-        
-
-        if (progress % 1 == 0) {
-            particles.add(new Particle(x2, y2, col));
-        }
+        // push();
+        // drawCylinder(new Point(cx, cy), 10, size / 2, 50, speed);
+        // pop();
 
         progress += speed;
     }
-}
-
-class Particle {
-    float speed = 1;
-    PVector dir = new PVector(0, 0);
-    PVector vel = new PVector(0, 0);
-    PVector pos;
-    int col;
-
-    Particle(float x, float y, int col) {
-        pos = new PVector(x, y);
-        this.col = col;
-    }
-
-    public void move() {
-        float angle = noise(pos.x / NOISE_SCALE, pos.y / NOISE_SCALE) * TWO_PI * NOISE_SCALE;
-        dir.x = cos(angle);
-        dir.y = sin(angle);
-        vel = dir.copy();
-        vel.mult(speed);
-        pos.add(vel);
-    }
-
-    public void checkEdge() {
-        if (pos.x > width || pos.x < 0 || pos.y > height || pos.y < 0) {
-            pos.x = random(50, width);
-            pos.y = random(50, height);
-        }
-    }
-
-    public void draw(float r, int alpha) {
-        fill(col);
-        alpha(alpha);
-
-        circle(pos.x, pos.y, r);
-        checkEdge();
-    }
-
 }
 
 public void setup() {
@@ -140,47 +111,69 @@ public void setup() {
     rows.add(new Row(random(10, 100), height / 2));
 }
 
-public float updateRows(ArrayList<Row> rows) {
+public void cleanRows(ArrayList<Row> rows) {
     for (int i = rows.size() - 1; i > 0; i--) {
         Row row = rows.get(i);
         if (row.top + row.rowSize < 0) {
             rows.remove(i);
         }
     }
+}
 
 
-    float rowsHeight = 0;
-    for (Row row : rows) rowsHeight += row.rowSize;
-
-    return rowsHeight;
+public void drawCylinder(Point center, float topRadius, float bottomRadius, float tall, float speed) {
+  float angle = frame * speed * TWO_PI / 60;
+  float angleIncrement = (TWO_PI / 3) / RESOLUTION;
+  fill(232);
+  noStroke();
+  beginShape(QUAD_STRIP);
+  for (int i = 0; i < RESOLUTION + 1; ++i) {
+    vertex(topRadius*cos(angle) + center.x, topRadius*sin(angle) + center.y, tall);
+    vertex(bottomRadius*cos(angle) + center.x, center.y + bottomRadius*sin(angle), 0);
+    angle += angleIncrement;
+  }
+  endShape();
 }
 
 
 public void draw() {
     background(0);
-    fill(0);
-    stroke(255);
+    // directionalLight(51, 102, 126, -1, 0, 0);
 
-    float rowsHeight = updateRows(rows);
-    float availHeight = height - rowsHeight;
 
-    if (frame % 60 == 0) {
-        if (availHeight / 2 > 30) {
+    cleanRows(rows);
+    float availHeight = height - rows.get(0).top - rows.get(0).rowSize;
+
+    println(availHeight);
+
+    // rotateY(map(mouseX, 0, width, 0, PI));
+    // rotateZ(map(mouseY, 0, height, 0, -PI));
+
+
+    
+
+    if (frame % 30 == 0) {
+        if (availHeight / 2 > 100) {
             Row prevRow = rows.get(0);
-            Row newRow = new Row(random(10, availHeight / 2), prevRow.top + prevRow.rowSize);
+            Row newRow = new Row(random(50, availHeight / 2), prevRow.top + prevRow.rowSize);
             rows.add(0, newRow);
-        }
 
-        frame = 0;  
+            frame = 0;
+        }
     }
 
     for (Row row : rows) {
         row.draw();
     }
 
+    // fill(232);
+    // stroke(232);
+    // strokeWeight(1);
+    // drawCylinder(width / 2, height / 2, 10, 100, 50, 50);
+
     frame++;
 }
-  public void settings() {  size(1000,1000); }
+  public void settings() {  size(1000,1000, P3D); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "zero_one" };
     if (passedArgs != null) {
