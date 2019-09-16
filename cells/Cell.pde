@@ -8,32 +8,34 @@ float growthStep = 0.5;
 float maxSize = 50;
 
 class Point {
-    float x, y;
+	float x, y;
 
-    Point(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
+	Point(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
 class Cell {
   Point p;
   PVector v;
-  float d;
+  float d, dna;
   int id;
 	boolean sick = false;
  
-  Cell(Point p, float d, int id) {
+  Cell(Point p, float d, float dna, int id) {
     this.p = p;
     this.d = d;
+		this.dna = dna;
     this.id = id;
     this.v = new PVector(random(0.1, 1), random(0.1, 1));
   }
 
-  Cell(Point p, PVector v, float d, int id) {
+  Cell(Point p, PVector v, float d, float dna, int id) {
     this.p = p;
 		this.v = v;
     this.d = d;
+		this.dna = dna;
     this.id = id;
   }
 
@@ -49,7 +51,7 @@ class Cell {
 				die(cells);
 			}
 		}
-
+		
 		if (random(1) < sicknessChance) {
 			sick = true;
 		}
@@ -69,15 +71,19 @@ class Cell {
 		p.y -= d;
 
 		Point point = new Point(p.x + d/2, p.y + d/2);
-		Cell newCell = new Cell(point, v.copy(), d, cells.size());
+		Cell newCell = new Cell(point, v.copy(), d, mutate(), cells.size());
+
 		cells.add(newCell);
   }
+
+	float mutate() {
+		return min(max(0, dna + random(-20, 20)), 360);
+	}
 
 	void die(ArrayList<Cell> cells) {
 		cells.remove(this);
 	}
   
-  // void collide(ArrayList<Cell> cells) {
 	void collide(Cell cell) {
 		float dx = cell.p.x - p.x;
 		float dy = cell.p.y - p.y;
@@ -98,7 +104,9 @@ class Cell {
 			cell.v.y += ay;
 
 			if (sick) {
-				cell.sick = true;
+				if (Math.abs(cell.dna - dna) < 30) {
+					cell.sick = true;
+				}
 			}
 		}
   }
@@ -126,11 +134,11 @@ class Cell {
   
   void display() {
 		if (sick) {
-			fill(0, 255, 0, 204);
+			fill(dna, 300, 300);
 		} else {
-			fill(255, 204);
+			fill(dna, 360, 360);
 		}
 
-    ellipse(p.x, p.y, d + random(-1, 1), d + random(-1, 1));
+    ellipse(p.x, p.y, d, d);
   }
 }
