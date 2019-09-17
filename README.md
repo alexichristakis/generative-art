@@ -28,3 +28,5 @@ Renders circles that grow, divide, mutate, get sick, and die. A cell's color is 
 
 ## wave_sim
 An attempt to simulate the topography of waves on the surface of a body of water. Points are drawn in 4 dimensions (x, y, z, color) with the z and color dimensions mapped to a perlin noise function. To map the visualization to the becton space, two regions are drawn: one to account for the panels in the hallway, and one to account for the large panel in the cafe. 
+
+Videos: https://drive.google.com/drive/folders/1n2tfZnRGVDYvmHAQN-sr9ty9tVwch21L?usp=sharing
