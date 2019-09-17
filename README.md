@@ -11,14 +11,14 @@ Execute: `curl https://processing.org/download/install-arm.sh | sudo sh` to ensu
 in: `/etc/xdg/lxsession/LXDE-p/autostart` add a line: `@python PATH_TO_START_SCRIPT`
 and also add a script `start.py` with the code:
 
-`
+```
 import os
 
 path = os.path.dirname(os.path.realpath(__file__))
 
 os.system("DISPLAY=:1")
 os.system("processing-java --force --sketch="+path+" --output="+path+"/out --run")
-`
+```
 
 This will run the visualization on boot.
 
