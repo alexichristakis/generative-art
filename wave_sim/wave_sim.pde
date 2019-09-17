@@ -73,8 +73,7 @@ void setup() {
 
 void draw() {
   background(0);
-    
-  float xoff = 0.0;
+  
   for (int i = 0; i < bectonScreens.size(); i++) {
     bectonScreens.get(i).draw();
   }
