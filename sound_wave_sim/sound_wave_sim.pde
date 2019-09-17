@@ -14,7 +14,7 @@ int X_RES = 100;
 int Y_RES = 100;
 
 void setup() {
-  size(1000, 1000, P3D);
+  size(660, 1000, P3D);
   // fullScreen(P3D);
   colorMode(HSB);
 	
@@ -29,7 +29,7 @@ void setup() {
 void draw() {
   background(0);
   stroke(0);
-	// translate(width / 2, height / 2);
+	translate(width / 2, height / 2);
   
 //   noiseDetail(8,0.65f);
 
@@ -37,19 +37,19 @@ void draw() {
   
   float xoff = 0.0;
   
-  // beginShape(TRIANGLES);
-  // strokeWeight(4);
-	// for (int r = 0; r < width / 2; r += 5) {
-	// 	xoff += increment;
-	// 	float yoff = 0.0;
-	// 	for (float theta = 0; theta < TWO_PI; theta += PI / 100) {
-	// 		yoff += increment;
+  beginShape(TRIANGLES);
+  strokeWeight(4);
+	for (int r = 0; r < width / 2; r += 5) {
+		xoff += increment;
+		float yoff = 0.0;
+		for (float theta = 0; theta < TWO_PI; theta += PI / 100) {
+			yoff += increment;
 
-	// 		float bright = fft.getFreq(r)*100;
-	// 		stroke(bright, 360, 360);
-	// 		point(r * cos(theta), r * sin(theta), bright / 2);
-	// 	}
-	// }
+			float bright = fft.getFreq(r)*100;
+			stroke(bright, 360, 360);
+			point(r * cos(theta), r * sin(theta), bright / 2);
+		}
+	}
 
 	// float[] spectrum = new float[500];
 	// for (int i = 0; i < 500; i++) {
@@ -58,24 +58,24 @@ void draw() {
 
 	float[] spectrum = fft.getSpectrumReal();
 
-	strokeWeight(2);
-  for (int x = 0; x < X_RES; x++) {
-    xoff += increment;
-    float yoff = 0.0;
-    for (int y = 0; y < Y_RES; y++) {
-      yoff += increment;
+	// strokeWeight(2);
+  // for (int x = 0; x < X_RES; x++) {
+  //   xoff += increment;
+  //   float yoff = 0.0;
+  //   for (int y = 0; y < Y_RES; y++) {
+  //     yoff += increment;
       
-      // float bright = noise(xoff,yoff,zoff)*255;
-			float bright = spectrum[x];
+  //     // float bright = noise(xoff,yoff,zoff)*255;
+	// 		float bright = spectrum[x];
 			
-			// println(bright);
+	// 		// println(bright);
 
-      // stroke(bright * 255, 360, 360);
-			stroke(0, 360, 360);
-      point(x * width / X_RES, y * height / Y_RES, bright * 10);
+  //     // stroke(bright * 255, 360, 360);
+	// 		stroke(0, 360, 360);
+  //     point(x * width / X_RES, y * height / Y_RES, bright * 10);
 
-    }
-  }
+  //   }
+  // }
   // endShape();
   
   zoff += zincrement;
