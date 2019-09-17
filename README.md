@@ -1,1 +1,1 @@
-generative art Processing program for the Becton Cafe LED display
+generative art Processing programs for the Becton Cafe LED display

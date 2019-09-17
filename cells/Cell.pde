@@ -1,66 +1,41 @@
-float spring = 0.05;
-float gravity = 0.03;
-float friction = -0.9;
-float growthChance = 0.1;
-float sicknessChance = 0.0005;
-float deathChance = 0.001;
-float growthStep = 0.5;
-float maxSize = 50;
-
-class Point {
-	float x, y;
-
-	Point(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-}
-
 class Cell {
-  Point p;
-  PVector v;
+  PVector p, v;
   float d, dna;
-  int id;
 	boolean sick = false;
+	boolean dividing = false;
  
-  Cell(Point p, float d, float dna, int id) {
-    this.p = p;
+  Cell(float x, float y, float d, float dna) {
+    this.p = new PVector(x, y);
     this.d = d;
 		this.dna = dna;
-    this.id = id;
-    this.v = new PVector(random(0.1, 1), random(0.1, 1));
+    this.v = new PVector(random(0.01, MAX_VELOCITY_1), random(0.01, MAX_VELOCITY_1));
   }
 
-  Cell(Point p, PVector v, float d, float dna, int id) {
-    this.p = p;
-		this.v = v;
+  Cell(float x, float y, PVector v, float d, float dna) {
+    this.p = new PVector(x, y);
     this.d = d;
+		this.v = v;
 		this.dna = dna;
-    this.id = id;
   }
 
   void update(ArrayList<Cell> cells) {
 		move();
 		display();
 
-		if (!sick && random(1) < growthChance) {
-			d += growthStep;
+		if (!sick && random(1) < GROWTH_CHANCE) {
+			d += GROWTH_STEP;
 		} else if (sick) {
-			if (random(0.5) < growthChance) d -= growthStep;
+			if (random(0.5) < GROWTH_CHANCE) d -= GROWTH_STEP;
 			if (d <= 0) {
 				die(cells);
 			}
 		}
 		
-		if (random(1) < sicknessChance) {
+		if (random(1) < SICKNESS_CHANCE) {
 			sick = true;
 		}
 
-		if (sick && random(1) < deathChance) {
-			die(cells);
-		}
-
-		if (d > maxSize) {
+		if (random(1) < DIVIDE_CHANCE && d > MAX_SIZE) {
 			mitosis(cells);
 		}
   }
@@ -70,8 +45,7 @@ class Cell {
 		p.x -= d;
 		p.y -= d;
 
-		Point point = new Point(p.x + d/2, p.y + d/2);
-		Cell newCell = new Cell(point, v.copy(), d, mutate(), cells.size());
+		Cell newCell = new Cell(p.x + d/2, p.y + d/2, v.copy(), d, mutate());
 
 		cells.add(newCell);
   }
@@ -90,14 +64,15 @@ class Cell {
 
 		float distance = sqrt(dx*dx + dy*dy);
 
-		float minDist = cell.d/2 + d/2;
+		float minDist = cell.d / 2 + d / 2;
 
 		if (distance < minDist) { 
 			float angle = atan2(dy, dx);
 			float targetX = p.x + cos(angle) * minDist;
 			float targetY = p.y + sin(angle) * minDist;
-			float ax = (targetX - cell.p.x) * spring;
-			float ay = (targetY - cell.p.y) * spring;
+			float ax = (targetX - cell.p.x) * SPRING;
+			float ay = (targetY - cell.p.y) * SPRING;
+
 			v.x -= ax;
 			v.y -= ay;
 			cell.v.x += ax;
@@ -112,23 +87,31 @@ class Cell {
   }
   
   void move() {
-    p.x += v.x;
-    p.y += v.y;
+		// if (p.x > FAST_ZONE) {
+		// 	p.x += min(max(v.x, -MAX_VELOCITY_1), MAX_VELOCITY_1);
+		// 	p.y += min(max(v.y, -MAX_VELOCITY_1), MAX_VELOCITY_1);
+		// } else {
+		// 	p.x += min(max(v.x, -MAX_VELOCITY_2), MAX_VELOCITY_2);
+		// 	p.y += min(max(v.y, -MAX_VELOCITY_2), MAX_VELOCITY_2);
+		// }
+
+		p.x += v.x * FRICTION;
+		p.y += v.y * FRICTION;
+
     if (p.x + d/2 > width) {
       p.x = width - d/2;
-      v.x *= friction; 
-    }
-    else if (p.x - d/2 < 0) {
+      v.x *= BOUNCE_FRICTION; 
+    } else if (p.x - d/2 < 0) {
       p.x = d/2;
-      v.x *= friction;
+      v.x *= BOUNCE_FRICTION;
     }
-    if (p.y + d/2 > height) {
+    
+		if (p.y + d/2 > height) {
       p.y = height - d/2;
-      v.y *= friction; 
-    } 
-    else if (p.y - d/2 < 0) {
+      v.y *= BOUNCE_FRICTION; 
+    } else if (p.y - d/2 < 0) {
       p.y = d/2;
-      v.y *= friction;
+      v.y *= BOUNCE_FRICTION;
     }
   }
   
