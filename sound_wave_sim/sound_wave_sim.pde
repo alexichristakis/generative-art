@@ -14,8 +14,8 @@ int X_RES = 100;
 int Y_RES = 100;
 
 void setup() {
-  size(660, 1000, P3D);
-  // fullScreen(P3D);
+  // /size(660, 1000, P3D);
+  fullScreen(P3D);
   colorMode(HSB);
 	
 
@@ -38,25 +38,27 @@ void draw() {
   float xoff = 0.0;
   
   beginShape(TRIANGLES);
-  strokeWeight(4);
+  strokeWeight(6);
 	for (int r = 0; r < width / 2; r += 5) {
 		xoff += increment;
 		float yoff = 0.0;
 		for (float theta = 0; theta < TWO_PI; theta += PI / 100) {
 			yoff += increment;
 
-			float bright = fft.getFreq(r)*100;
+			float bright = fft.getFreq(r)*280;
 			stroke(bright, 360, 360);
-			point(r * cos(theta), r * sin(theta), bright / 2);
+			point(r * cos(theta), r * sin(theta + (zoff * r) / (5000)), bright / 20);
 		}
 	}
+
+  zoff += zincrement;
 
 	// float[] spectrum = new float[500];
 	// for (int i = 0; i < 500; i++) {
 	// 	spectrum[i] = fft.getFreq((float) Math.pow(i, 1.5));
 	// }
 
-	float[] spectrum = fft.getSpectrumReal();
+	// float[] spectrum = fft.getSpectrumReal();
 
 	// strokeWeight(2);
   // for (int x = 0; x < X_RES; x++) {
@@ -78,5 +80,5 @@ void draw() {
   // }
   // endShape();
   
-  zoff += zincrement;
+  
 }
